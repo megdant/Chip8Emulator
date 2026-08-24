@@ -1,0 +1,20 @@
+# CMake build output
+build/
+
+# Compiled files
+*.exe
+*.o
+*.obj
+*.out
+
+# Visual Studio / MSBuild generated files
+*.vcxproj
+*.vcxproj.filters
+*.sln
+
+# VS Code local settings
+.vscode/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
