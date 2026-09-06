@@ -25,6 +25,16 @@ int main(int argc, char* argv[])
     std::cout << "ROM: " << argv[1] << std::endl;
 
     Chip8 chip8;
+    
+    if (!chip8.loadROM(argv[1]))
+    {
+        std::cout << argv[1] << " loaded unsuccessfully." << std::endl;
+        return 1;
+    }
+
+    std::cout << "ROM loaded successfully." << std::endl;
+
+    chip8.printMemoryPreview();
 
     return 0;
 }
