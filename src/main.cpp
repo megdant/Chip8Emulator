@@ -1,11 +1,12 @@
 // Notes:
-// arcv = arg values. argc = arg count. 
+// argv = arg values. argc = arg count. 
 // 0 = success. 1 = error.
-
 
 #include <iostream>
 #include "chip8.h"
 #include "disassembler.h"
+// formatting
+#include <iomanip>
 
 // Compiler Test:
 // int main()
@@ -45,12 +46,40 @@ int main(int argc, char* argv[])
 
     // Test case with the hardcoded INVADERS opcode first
     // uint16_t testOpcode = 0x1225;
-    uint16_t opcode = chip8.fetchOpcode();
-    std::cout
-        // << "0x1225 ->"
-        << "First instruction is: "
-        << disassembleOpcode(opcode)
-        << std::endl;
+    // uint16_t opcode = chip8.fetchOpcode();
+    // for (uint16_t address = 0x200; address < 0x220; address += 2)
 
+    // workflow: ROM starts at 0x200, ROM size = number of bytes loaded, ROM end = 0x200 + ROM size
+    uint16_t romEnd = 0x200 + static_cast<uint16_t>(chip8.getROMSize());
+    for (uint16_t address = 0x200; address + 1 < romEnd; address += 2)
+    // address + 1 is error handle for never reading past end of ROM (if odd #)
+    {
+        uint16_t opcode = chip8.getOpcodeAt(address);
+
+        std::cout
+            << std::hex
+            << std::uppercase
+            << std::setfill('0')
+            << std::setw(4)
+            << address
+            << ": "
+            << std::setw(4)
+            << opcode
+            << "    "
+            << disassembleOpcode(opcode)
+            << std::endl;
+    }
+    uint16_t entryOpcode = chip8.getOpcodeAt(0x225);
+
+    std::cout
+        << "Opcode at 0x225: "
+        << std::hex
+        << std::uppercase
+        << std::setfill('0')
+        << std::setw(4)
+        << entryOpcode
+        << "    "
+        << disassembleOpcode(entryOpcode)
+        << std::endl;
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 // adding for debugging purposes (memory preview)
 #include <iostream>
+// formatting
 #include <iomanip>
 
 // the constructor, runs each time there is a new Chip8 object created
@@ -20,9 +21,12 @@ Chip8::Chip8()
         V[i] = 0;
     }
 
+    // setting up the I register
     I = 0;
-    // the chip8 program will begin here at 0x200
+    // the chip8 program counter will begin here at 0x200
     pc = 0x200;
+    // setting up the ROM size
+    romSize = 0;
 
     // Memory      = cleared
     // V0-VF       = 0
@@ -48,6 +52,9 @@ bool Chip8::loadROM(const char* filename)
     {
         return false;
     }
+
+    // when file size is determined, store it in romSize here
+    romSize = static_cast<std::size_t>(size);
 
     // take bytes from the ROM
     // copy the bytes into chip8 memory starting at 0x200
@@ -89,4 +96,15 @@ uint16_t Chip8::fetchOpcode() const
     uint16_t opcode = (memory[pc] << 8) | memory[pc + 1];
 
     return opcode;
+}
+
+// will grab opcode from memory at the provided address
+uint16_t Chip8::getOpcodeAt(uint16_t address) const
+{
+    return (memory[address] << 8) | memory[address + 1];
+}
+
+std::size_t Chip8::getROMSize() const
+{
+    return romSize;
 }
