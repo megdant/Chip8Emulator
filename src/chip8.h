@@ -11,6 +11,8 @@ public:
     Chip8();
     bool loadROM(const char* filename);
     void printMemoryPreview() const;
+    // will fetch opcode
+    uint16_t fetchOpcode() const;
 private:
     // defining the virtual CHIP8 machine
     uint8_t memory[4096];

@@ -82,3 +82,11 @@ void Chip8::printMemoryPreview() const
             << std::endl;
     }
 }
+
+// will fetch opcode from memory at the current pc
+uint16_t Chip8::fetchOpcode() const
+{
+    uint16_t opcode = (memory[pc] << 8) | memory[pc + 1];
+
+    return opcode;
+}

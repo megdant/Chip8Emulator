@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include "chip8.h"
+#include "disassembler.h"
 
 // Compiler Test:
 // int main()
@@ -33,8 +34,23 @@ int main(int argc, char* argv[])
     }
 
     std::cout << "ROM loaded successfully." << std::endl;
+    // Test cases for disassembler with INVADERS opcodes
+    // std::cout << disassembleOpcode(0x1225) << std::endl;
+    // std::cout << disassembleOpcode(0x2456) << std::endl;
+    // std::cout << disassembleOpcode(0x6A15) << std::endl;
+    // std::cout << disassembleOpcode(0x7A01) << std::endl;
+    // std::cout << disassembleOpcode(0xA300) << std::endl;
 
     chip8.printMemoryPreview();
+
+    // Test case with the hardcoded INVADERS opcode first
+    // uint16_t testOpcode = 0x1225;
+    uint16_t opcode = chip8.fetchOpcode();
+    std::cout
+        // << "0x1225 ->"
+        << "First instruction is: "
+        << disassembleOpcode(opcode)
+        << std::endl;
 
     return 0;
 }
