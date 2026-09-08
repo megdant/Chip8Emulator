@@ -53,9 +53,6 @@ bool Chip8::loadROM(const char* filename)
         return false;
     }
 
-    // when file size is determined, store it in romSize here
-    romSize = static_cast<std::size_t>(size);
-
     // take bytes from the ROM
     // copy the bytes into chip8 memory starting at 0x200
     file.read(
@@ -68,6 +65,9 @@ bool Chip8::loadROM(const char* filename)
         return false;
     }
 
+    // when file size is determined, store it in romSize here
+    romSize = static_cast<std::size_t>(size);
+    
     return true;
 }
 
@@ -84,7 +84,6 @@ void Chip8::printMemoryPreview() const
             << ": 0x"
             << std::setw(2)
             << std::setfill('0')
-            // memory[i] is a unit_8, using static_cast to print it as an int
             << static_cast<int>(memory[i])
             << std::endl;
     }

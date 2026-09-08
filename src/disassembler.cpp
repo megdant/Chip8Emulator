@@ -25,11 +25,30 @@ std::string disassembleOpcode(uint16_t opcode)
     switch (opcode & 0xF000)
     {
 
-        // TODO add 0NNN and 00E0, 00EE cases
+        case 0x0000:
+            if (opcode == 0x00E0)
+            {
+                // 00E0 clear the display
+                // Ex: 0x00E0 -> CLS
+                output << "CLS";
+            }
+            else if (opcode == 0x00EE)
+            {
+                // 00EE return from subroutine
+                // Ex: 0x00EE -> RET
+                output << "RET";
+            }
+            else
+            {
+                // 0NNN call machine code routine at NNN
+                // Ex: 0x0123 -> SYS 0x123
+                output << "SYS 0x"
+                    << std::hex << std::uppercase
+                    << nnn;
+            }
+            break;
+
         // 1NNN jump to NNN
-
-        // keep in order!
-
         // Ex: 0x1225 -> JP 0x225
         case 0x1000:
             output << "JP 0x" << std::hex << std::uppercase << nnn;
@@ -96,7 +115,101 @@ std::string disassembleOpcode(uint16_t opcode)
                 << static_cast<int>(nn);
             break;
 
-        // TODO add 0x8000
+        // 8XYN register
+        case 0x8000:
+            switch (n)
+            {
+                // 8XY0 set VX = VY
+                // Ex: 0x8120 -> LD V1, V2
+                case 0x0:
+                    output << "LD V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY1 set VX = VX OR VY
+                // Ex: 0x8121 -> OR V1, V2
+                case 0x1:
+                    output << "OR V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY2 set VX = VX AND VY
+                // Ex: 0x8122 -> AND V1, V2
+                case 0x2:
+                    output << "AND V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY3 set VX = VX XOR VY
+                // Ex: 0x8123 -> XOR V1, V2
+                case 0x3:
+                    output << "XOR V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY4 add VY to VX
+                // Ex: 0x8124 -> ADD V1, V2
+                case 0x4:
+                    output << "ADD V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY5 subtract VY from VX
+                // Ex: 0x8125 -> SUB V1, V2
+                case 0x5:
+                    output << "SUB V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XY6 shift VX right by 1
+                // Ex: 0x8126 -> SHR V1
+                case 0x6:
+                    output << "SHR V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x);
+                    break;
+
+                // 8XY7 set VX = VY - VX
+                // Ex: 0x8127 -> SUBN V1, V2
+                case 0x7:
+                    output << "SUBN V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x)
+                        << ", V"
+                        << static_cast<int>(y);
+                    break;
+
+                // 8XYE shift VX left by 1
+                // Ex: 0x812E -> SHL V1
+                case 0xE:
+                    output << "SHL V"
+                        << std::hex << std::uppercase
+                        << static_cast<int>(x);
+                    break;
+
+                default:
+                    output << "UNKNOWN";
+                    break;
+            }
+            break;
 
         // 9XY0 skip next instruction if VX != VY
         // Ex: 0x9AB0 -> SNE VA, VB
@@ -129,7 +242,7 @@ std::string disassembleOpcode(uint16_t opcode)
                 << nnn;
             break;
 
-        // CXNN random byte AND NN, store in VX
+        // CXNN generate random byte, AND it with NN, store result in VX
         // Ex: 0xCA0F -> RND VA, 0x0F
         case 0xC000:
             output << "RND V"
@@ -151,7 +264,91 @@ std::string disassembleOpcode(uint16_t opcode)
                 << static_cast<int>(n);
             break;
 
-        // TODO add 0xE000 and 0xF000
+        // EX9E skip next instruction if key stored in VX is pressed
+        // EXA1 skip next instruction if key stored in VX is not pressed
+        case 0xE000:
+            if (nn == 0x9E)
+            {
+                output << "SKP V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0xA1)
+            {
+                output << "SKNP V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else
+            {
+                output << "UNKNOWN";
+            }
+            break;
+
+        // 0xF000 family
+        case 0xF000:
+            if (nn == 0x07)
+            {
+                output << "LD V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x)
+                    << ", DT";
+            }
+            else if (nn == 0x0A)
+            {
+                output << "LD V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x)
+                    << ", K";
+            }
+            else if (nn == 0x15)
+            {
+                output << "LD DT, V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x18)
+            {
+                output << "LD ST, V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x1E)
+            {
+                output << "ADD I, V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x29)
+            {
+                output << "LD F, V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x33)
+            {
+                output << "LD B, V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x55)
+            {
+                output << "LD [I], V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x);
+            }
+            else if (nn == 0x65)
+            {
+                output << "LD V"
+                    << std::hex << std::uppercase
+                    << static_cast<int>(x)
+                    << ", [I]";
+            }
+            else
+            {
+                output << "UNKNOWN";
+            }
+            break;
 
         // unknown if not implemented yet
         default:

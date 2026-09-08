@@ -12,7 +12,6 @@
 // int main()
 // {
 //     std::cout << "CHIP8 Emulator test" << std::endl;
-
 //     return 0;
 // }
 
@@ -34,13 +33,45 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::cout << "ROM loaded successfully." << std::endl;
+    std::cout << argv[1] <<" loaded successfully." << std::endl;
+
     // Test cases for disassembler with INVADERS opcodes
     // std::cout << disassembleOpcode(0x1225) << std::endl;
     // std::cout << disassembleOpcode(0x2456) << std::endl;
     // std::cout << disassembleOpcode(0x6A15) << std::endl;
     // std::cout << disassembleOpcode(0x7A01) << std::endl;
     // std::cout << disassembleOpcode(0xA300) << std::endl;
+
+    // Test cases for 8XYN opcodes
+    // std::cout << disassembleOpcode(0x8120) << std::endl;
+    // std::cout << disassembleOpcode(0x8121) << std::endl;
+    // std::cout << disassembleOpcode(0x8122) << std::endl;
+    // std::cout << disassembleOpcode(0x8123) << std::endl;
+    // std::cout << disassembleOpcode(0x8124) << std::endl;
+    // std::cout << disassembleOpcode(0x8125) << std::endl;
+    // std::cout << disassembleOpcode(0x8126) << std::endl;
+    // std::cout << disassembleOpcode(0x8127) << std::endl;
+    // std::cout << disassembleOpcode(0x812E) << std::endl;
+
+    // Test cases for 0x0000 family opcodes
+    // std::cout << disassembleOpcode(0x00E0) << std::endl;
+    // std::cout << disassembleOpcode(0x00EE) << std::endl;
+    // std::cout << disassembleOpcode(0x0123) << std::endl;
+
+    // Test cases for 0xE000 family opcodes
+    // std::cout << disassembleOpcode(0xEA9E) << std::endl;
+    // std::cout << disassembleOpcode(0xEAA1) << std::endl;
+
+    // Test cases for 0xF000 family opcodes
+    // std::cout << disassembleOpcode(0xF107) << std::endl;
+    // std::cout << disassembleOpcode(0xF10A) << std::endl;
+    // std::cout << disassembleOpcode(0xF115) << std::endl;
+    // std::cout << disassembleOpcode(0xF118) << std::endl;
+    // std::cout << disassembleOpcode(0xF11E) << std::endl;
+    // std::cout << disassembleOpcode(0xF129) << std::endl;
+    // std::cout << disassembleOpcode(0xF133) << std::endl;
+    // std::cout << disassembleOpcode(0xF155) << std::endl;
+    // std::cout << disassembleOpcode(0xF165) << std::endl;
 
     chip8.printMemoryPreview();
 
@@ -69,17 +100,17 @@ int main(int argc, char* argv[])
             << disassembleOpcode(opcode)
             << std::endl;
     }
-    uint16_t entryOpcode = chip8.getOpcodeAt(0x225);
-
-    std::cout
-        << "Opcode at 0x225: "
-        << std::hex
-        << std::uppercase
-        << std::setfill('0')
-        << std::setw(4)
-        << entryOpcode
-        << "    "
-        << disassembleOpcode(entryOpcode)
-        << std::endl;
+    // Test case for checking opcode 225 in the INVADERS ROM
+    // uint16_t entryOpcode = chip8.getOpcodeAt(0x225);
+    // std::cout
+    //     << "Opcode at 0x225: "
+    //     << std::hex
+    //     << std::uppercase
+    //     << std::setfill('0')
+    //     << std::setw(4)
+    //     << entryOpcode
+    //     << "    "
+    //     << disassembleOpcode(entryOpcode)
+    //     << std::endl;
     return 0;
 }

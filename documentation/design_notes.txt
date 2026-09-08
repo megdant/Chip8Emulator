@@ -1,0 +1,24 @@
+Design roadblock #1:
+- My initial disassembler used a "linear sweep" through the ROM, 
+starting at 0x200 and advancing two bytes at a time with a for loop. 
+- I implemented getROMSize() so the loop could determine the actual end 
+of any loaded ROM, and getOpcodeAt(address) so I could fetch and combine 
+the two bytes at any specific memory address into a 16-bit opcode. 
+- Testing against "INVADERS", the first instruction was 0x1225, which my 
+disassembleOpcode() function correctly decoded as JP 0x225. The bytes after 
+that included the embedded text "SPACE INVADERS", but my linear sweep was 
+treating those data bytes as instructions.
+- I also realized that because the loop incremented with address += 2 from 
+0x200, it would only visit even addresses and could never reach the actual jump 
+target at 0x225. To test that theory, I bypassed the loop and directly called 
+getOpcodeAt(0x225), then passed the result into disassembleOpcode(). It printed 
+"Opcode at 0x225: 6000    LD V0, 0x0", confirming that 0x225 was valid executable code. 
+- TODO: fix linear sweep ... maybe continue and come back?
+
+*****************************************************************************************
+Test cases:
+As I implemented each opcode family, I created known opcodes where the 
+fields were easy to recognize. Example: for the 8XYN family I kept X as 
+1 and Y as 2 and changed the final nibble to test each operation. That made it easy 
+to verify that both my bit masking and instruction decoding were producing the 
+expected output.
