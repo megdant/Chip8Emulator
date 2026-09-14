@@ -8,13 +8,18 @@
 #include <iomanip> // formatting
 #include <vector> // will list addresses of opcodes in ROM
 // #include <algorithm> // will sort the addresses of opcodes in ROM
+#include <string>
 
+// ***********************************************************************
+// ***********************************************************************
 // Compiler Test:
 // int main()
 // {
 //     std::cout << "CHIP8 Emulator test" << std::endl;
 //     return 0;
 // }
+// ***********************************************************************
+// ***********************************************************************
 
 int main(int argc, char* argv[])
 {
@@ -36,6 +41,9 @@ int main(int argc, char* argv[])
 
     std::cout << argv[1] <<" loaded successfully." << std::endl;
 
+
+// ***********************************************************************
+// ***********************************************************************
     // Test cases for disassembler with INVADERS opcodes
     // std::cout << disassembleOpcode(0x1225) << std::endl;
     // std::cout << disassembleOpcode(0x2456) << std::endl;
@@ -73,14 +81,22 @@ int main(int argc, char* argv[])
     // std::cout << disassembleOpcode(0xF133) << std::endl;
     // std::cout << disassembleOpcode(0xF155) << std::endl;
     // std::cout << disassembleOpcode(0xF165) << std::endl;
+// ***********************************************************************
+// ***********************************************************************
 
     // chip8.printMemoryPreview();
 
+// ***********************************************************************
+// ***********************************************************************
     // Test case with the hardcoded INVADERS opcode first
     // uint16_t testOpcode = 0x1225;
     // uint16_t opcode = chip8.fetchOpcode();
     // for (uint16_t address = 0x200; address < 0x220; address += 2)
+// ***********************************************************************
+// ***********************************************************************
 
+// ***********************************************************************
+// ***********************************************************************
     // workflow: ROM starts at 0x200, ROM size = number of bytes loaded, ROM end = 0x200 + ROM size
     // uint16_t romEnd = 0x200 + static_cast<uint16_t>(chip8.getROMSize());
     // for (uint16_t address = 0x200; address + 1 < romEnd; address += 2)
@@ -101,6 +117,8 @@ int main(int argc, char* argv[])
     //         << disassembleOpcode(opcode)
     //         << std::endl;
     // }
+// ***********************************************************************
+// ***********************************************************************
 
     // ROM starts at 0x200
     // ROM end = 0x200 + number of bytes loaded
@@ -108,12 +126,14 @@ int main(int argc, char* argv[])
 
     // Keeps track of addresses we already checked
     bool visited[4096] = { false };
+    bool label[4096] = { false };
 
     // Addresses that still need to be checked
     std::vector<uint16_t> addressesToCheck;
 
     // CHIP-8 programs begin at 0x200
     addressesToCheck.push_back(0x200);
+    label[0x200] = true;
 
     while (!addressesToCheck.empty())
     {
@@ -147,6 +167,7 @@ int main(int argc, char* argv[])
         // 1NNN - jump
         if ((opcode & 0xF000) == 0x1000)
         {
+            label[targetAddress] = true;
             addressesToCheck.push_back(targetAddress);
             continue;
         }
@@ -154,6 +175,7 @@ int main(int argc, char* argv[])
         // 2NNN - call
         if ((opcode & 0xF000) == 0x2000)
         {
+            label[targetAddress] = true;
             addressesToCheck.push_back(nextAddress);
             addressesToCheck.push_back(targetAddress);
             continue;
@@ -181,27 +203,53 @@ int main(int argc, char* argv[])
         // Normal instruction
         addressesToCheck.push_back(nextAddress);
     }
+    
+    std::cout << std::endl;
+    std::cout << std::string(50, '*') << std::endl;
+    std::cout << "; CHIP8 Disassembler" << std::endl;
+    std::cout << "; ROM: " << argv[1] << std::endl;
+    std::cout << "; ROM Size: " << chip8.getROMSize() << " Bytes" << std::endl;
+    std::cout << std::string(50, '*') << std::endl;
+    std::cout << std::endl;
+
     // Print reachable instructions in memory order
     for (uint16_t address = 0x200; address + 1 < romEnd; address++)
     {
         if (visited[address])
         {
+
+        if (label[address])
+        {
+            std::cout
+                << "L"
+                << std::hex
+                << std::uppercase
+                << address
+                << ":"
+                << std::endl;
+        }
+
             uint16_t opcode = chip8.getOpcodeAt(address);
 
             std::cout
+                << "    "
+                << std::left
+                << std::setfill(' ')
+                << std::setw(28)
+                << disassembleOpcode(opcode)
+                << "; "
+                << std::right
                 << std::hex
                 << std::uppercase
                 << std::setfill('0')
                 << std::setw(4)
-                << address
-                << ": "
-                << std::setw(4)
                 << opcode
-                << "    "
-                << disassembleOpcode(opcode)
                 << std::endl;
         }
     }
+
+// ***********************************************************************
+// ***********************************************************************
     // Test case for checking opcode 225 in the INVADERS ROM
     // uint16_t entryOpcode = chip8.getOpcodeAt(0x225);
     // std::cout
@@ -214,5 +262,7 @@ int main(int argc, char* argv[])
     //     << "    "
     //     << disassembleOpcode(entryOpcode)
     //     << std::endl;
+// ***********************************************************************
+// ***********************************************************************
     return 0;
 }

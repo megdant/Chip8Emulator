@@ -13,7 +13,11 @@ treating those data bytes as instructions.
 target at 0x225. To test that theory, I bypassed the loop and directly called 
 getOpcodeAt(0x225), then passed the result into disassembleOpcode(). It printed 
 "Opcode at 0x225: 6000    LD V0, 0x0", confirming that 0x225 was valid executable code. 
-- TODO: fix linear sweep ... maybe continue and come back?
+- Fixed the linear sweep
+    - fixed the disassembler by following the program’s actual control flow 
+    instead of reading every two bytes as code, which stopped data from being 
+    decoded as instructions.
+- Added labels and cleaner formatting so jump/call locations and opcodes are easier to read.
 
 *****************************************************************************************
 Test cases:
