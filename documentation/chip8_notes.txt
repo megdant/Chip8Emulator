@@ -1,0 +1,118 @@
+CHIP 8 Research Notes!
+
+***********************************************************************
+***********************************************************************
+Articles Referenced:
+- https://en.wikipedia.org/wiki/CHIP-8
+- https://emulator101.mirror.simoni.dev/introduction-to-chip-8.html series of websites
+- https://chip-8.github.io/links/
+- https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference
+- https://johnearnest.github.io/Octo/docs/chip8ref.pdf
+- https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
+
+***********************************************************************
+***********************************************************************
+Key Points:
+- A 16 bit CHIP 8 opcode has 4 nibbles
+    - a nibble = exactly 4 bits
+- MEMORY: 
+    - CHIP8 has 4096 bytes (4 KB) of memory
+    - Addresses go from 0x000 to 0xFFF
+    - Programs typically will begin at address 0x200
+- REGISTERS:
+    - There are 16 general-purpose 8-bit registers
+    - They are named V0 through VF
+        - VF is sometimes used as a flag, such as for carry or collision
+    - Each can hold a value from 0 to 255 (0x00 to 0xFF)
+- I REGISTER:
+    - I is a special 16-bit register
+    - It is commonly used to hold a memory address.
+- PROGRAM COUNTER (PC):
+    - The PC tells the emulator where the NEXT instruction is in memory
+    - CHIP-8 instructions are 2 bytes long 
+    - Normally, after reading an instruction, PC moves forward by 2
+    - Jumps, calls, returns, and skip instructions can change that behavior
+- STACK:
+    - The stack remembers return addresses for subroutines
+    - CALL: save where you came from, then jump somewhere else
+    - RET: return to the saved address.
+- TIMERS: 
+    - Delay timer counts down toward zero
+    - Sound timer counts down toward zero
+    - CHIP-8 timers normally decrease at 60 Hz
+- DISPLAY: 
+    - Classic CHIP-8 display: 64 x 32 pixels
+    - Each pixel is simply ON or OFF
+    - Drawing uses XOR behavior
+    - Drawing can set VF when pixels collide.
+- KEYPAD:
+    - CHIP-8 has 16 keys
+    - My keyboard should be mapped to the virtual keys
+
+***********************************************************************
+***********************************************************************
+Terms:
+- BIT: 0 or 1
+- NIBBLE: 4 bits
+    - 1 hexadecimal digit = 1 nibble
+- BYTE: 8 bits
+- CHIP 8 OPCODE:
+    - 16 bits
+    - 2 bytes
+    - 4 hex digits aka 4 nibbles
+
+***********************************************************************
+***********************************************************************
+Visual designs:
+- Classic display:
+    - 64 pixels wide
+    - 32 pixels tall
+- Pixel:
+    - 0 = OFF
+    - 1 = ON
+- Sprites are stored as bytes in memory
+
+***********************************************************************
+***********************************************************************
+FETCH-DECODE-EXECUTE CYCLE:
+- The emulator repeats 3 main steps:
+    1. FETCH
+        - Read the next 2 bytes from memory using the Program Counter (PC)
+        - Combine those 2 bytes into one 16-bit opcode
+    2. DECODE
+        - Determine what instruction the opcode represents
+        - Extract any register numbers, values, or addresses from the opcode
+    3. EXECUTE
+        - Perform the instruction
+        - This may change registers, memory, PC, stack, or display
+        
+***********************************************************************
+***********************************************************************
+OPCODE FORMAT:
+- Common letters used in CHIP 8 instruction documentation:
+    - X   = register number
+    - Y   = register number
+    - N   = 4-bit value / 1 nibble
+    - NN  = 8-bit value / 1 byte
+    - NNN = 12-bit memory address
+
+***********************************************************************
+***********************************************************************
+BIT MASKING / SHIFTING:
+- Bit masks allow me to extract specific parts of an opcode.
+- Bit shifting moves the extracted bits into the position I need.
+
+- For a 16-bit opcode:
+    uint8_t x   = (opcode & 0x0F00) >> 8;
+    uint8_t y   = (opcode & 0x00F0) >> 4;
+    uint8_t n   = opcode & 0x000F;
+    uint8_t nn  = opcode & 0x00FF;
+    uint16_t nnn = opcode & 0x0FFF;
+
+***********************************************************************
+***********************************************************************
+ROM LOADING:
+- A CHIP 8 ROM is a file containing the program's raw bytes
+- The ROM is loaded into CHIP-8 memory
+- Programs normally begin at address 0x200
+***********************************************************************
