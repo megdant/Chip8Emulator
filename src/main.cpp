@@ -248,6 +248,18 @@ int main(int argc, char* argv[])
         }
     }
 
+    // CPU Emulation Test Case
+    std::cout << std::endl;
+    std::cout << "CPU Test" << std::endl;
+
+    chip8.executeOpcode(0x600A); // V0 = 0x0A
+
+    std::cout
+        << "V0 = 0x"
+        << std::hex
+        << std::uppercase
+        << static_cast<int>(chip8.getRegister(0))
+        << std::endl;
 // ***********************************************************************
 // ***********************************************************************
     // Test case for checking opcode 225 in the INVADERS ROM

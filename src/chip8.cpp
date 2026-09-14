@@ -72,22 +72,22 @@ bool Chip8::loadROM(const char* filename)
 }
 
 // debug check to see a preview of the memory
-void Chip8::printMemoryPreview() const
-{
-    for (int i = 0x200; i < 0x210; i++)
-    {
-        std::cout
-            << "0x"
-            << std::hex
-            << std::uppercase
-            << i
-            << ": 0x"
-            << std::setw(2)
-            << std::setfill('0')
-            << static_cast<int>(memory[i])
-            << std::endl;
-    }
-}
+// void Chip8::printMemoryPreview() const
+// {
+//     for (int i = 0x200; i < 0x210; i++)
+//     {
+//         std::cout
+//             << "0x"
+//             << std::hex
+//             << std::uppercase
+//             << i
+//             << ": 0x"
+//             << std::setw(2)
+//             << std::setfill('0')
+//             << static_cast<int>(memory[i])
+//             << std::endl;
+//     }
+// }
 
 // will fetch opcode from memory at the current pc
 uint16_t Chip8::fetchOpcode() const
@@ -106,4 +106,39 @@ uint16_t Chip8::getOpcodeAt(uint16_t address) const
 std::size_t Chip8::getROMSize() const
 {
     return romSize;
+}
+
+// CPU Emulation methods
+uint8_t Chip8::getRegister(uint8_t index) const
+{
+    return V[index];
+}
+
+uint16_t Chip8::getPC() const
+{
+    return pc;
+}
+
+void Chip8::cycle()
+{
+    uint16_t opcode = fetchOpcode();
+
+    // CHIP-8 instructions are 2 bytes long
+    pc += 2;
+
+    executeOpcode(opcode);
+}
+
+void Chip8::executeOpcode(uint16_t opcode)
+{
+    uint8_t x = (opcode & 0x0F00) >> 8;
+    uint8_t nn = opcode & 0x00FF;
+
+    switch (opcode & 0xF000)
+    {
+        case 0x6000:
+            // 6XNN - Load NN into register VX
+            V[x] = nn;
+            break;
+    }
 }

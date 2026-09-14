@@ -17,6 +17,12 @@ public:
     uint16_t fetchOpcode() const;
     uint16_t getOpcodeAt(uint16_t address) const;
     std::size_t getROMSize() const;
+
+    // CPU emulation methods
+    void cycle();
+    void executeOpcode(uint16_t opcode);
+    uint8_t getRegister(uint8_t index) const;
+    uint16_t getPC() const;
 private:
     // defining the virtual CHIP8 machine
     uint8_t memory[4096];
