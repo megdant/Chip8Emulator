@@ -121,11 +121,10 @@ uint16_t Chip8::getPC() const
 
 void Chip8::cycle()
 {
+    // Fetching opcode of current instruction
     uint16_t opcode = fetchOpcode();
-
-    // CHIP-8 instructions are 2 bytes long
+    // Moving to next 2 byte instruction
     pc += 2;
-
     executeOpcode(opcode);
 }
 
@@ -133,12 +132,33 @@ void Chip8::executeOpcode(uint16_t opcode)
 {
     uint8_t x = (opcode & 0x0F00) >> 8;
     uint8_t nn = opcode & 0x00FF;
+    uint16_t nnn = opcode & 0x0FFF;
 
     switch (opcode & 0xF000)
     {
+        case 0x1000:
+            // 1NNN Jump to address NNN
+            pc = nnn;
+            break;
+
         case 0x6000:
-            // 6XNN - Load NN into register VX
+            // 6XNN Load NN into register VX
             V[x] = nn;
             break;
+
+        case 0x7000:
+            // 7XNN Add NN to register VX
+            V[x] += nn;
+            break;
+
+        case 0xA000:
+            // ANNN Load address NNN into I
+            I = nnn;
+            break;
     }
+}
+
+uint16_t Chip8::getI() const
+{
+    return I;
 }

@@ -23,6 +23,7 @@ public:
     void executeOpcode(uint16_t opcode);
     uint8_t getRegister(uint8_t index) const;
     uint16_t getPC() const;
+    uint16_t getI() const;
 private:
     // defining the virtual CHIP8 machine
     uint8_t memory[4096];
