@@ -31,4 +31,8 @@ private:
     uint16_t I;
     uint16_t pc;
     std::size_t romSize;
+    
+    // stack and stack pointer for subroutine calls
+    uint16_t stack[16];
+    uint8_t sp;
 };

@@ -32,6 +32,14 @@ Chip8::Chip8()
     // V0-VF       = 0
     // I register  = 0
     // PC          = 0x200
+
+    // stack init
+    sp = 0;
+
+    for (int i = 0; i < 16; i++)
+    {
+        stack[i] = 0;
+    }
 }
 
 // loading the ROM into memory
@@ -131,14 +139,57 @@ void Chip8::cycle()
 void Chip8::executeOpcode(uint16_t opcode)
 {
     uint8_t x = (opcode & 0x0F00) >> 8;
+    uint8_t y = (opcode & 0x00F0) >> 4;
     uint8_t nn = opcode & 0x00FF;
     uint16_t nnn = opcode & 0x0FFF;
 
     switch (opcode & 0xF000)
     {
+        
+        case 0x0000:
+            // 00EE Return from subroutine
+            if (opcode == 0x00EE)
+            {
+                sp--;
+                pc = stack[sp];
+            }
+            break;
+
         case 0x1000:
             // 1NNN Jump to address NNN
             pc = nnn;
+            break;
+
+        case 0x2000:
+            // 2NNN Call subroutine at address NNN
+            stack[sp] = pc;
+            sp++;
+            pc = nnn;
+            break;
+    
+        case 0x3000:
+            // 3XNN Skip next instruction if VX equals NN
+            if (V[x] == nn)
+            {
+                pc += 2;
+            }
+            break;
+
+        case 0x4000:
+            // 4XNN Skip next instruction if VX does not equal NN
+            if (V[x] != nn)
+            {
+                pc += 2;
+            }
+            break;
+
+        case 0x5000:
+            // 5XY0 Skip next instruction if VX equals VY
+            // 5XY0 is specifically valid when the last nibble is 0, need to check
+            if ((opcode & 0x000F) == 0 && V[x] == V[y])
+            {
+                pc += 2;
+            }
             break;
 
         case 0x6000:
@@ -149,6 +200,14 @@ void Chip8::executeOpcode(uint16_t opcode)
         case 0x7000:
             // 7XNN Add NN to register VX
             V[x] += nn;
+            break;
+
+        case 0x9000:
+            // 9XY0 Skip next instruction if VX does not equal VY
+            if ((opcode & 0x000F) == 0 && V[x] != V[y])
+            {
+                pc += 2;
+            }
             break;
 
         case 0xA000:

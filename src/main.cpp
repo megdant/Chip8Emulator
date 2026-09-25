@@ -191,6 +191,108 @@ int main(int argc, char* argv[])
         << chip8.getPC()
         << std::endl;
     
+
+    // CALL and RET test
+    std::cout << std::endl;
+    std::cout << "CALL/RET Test" << std::endl;
+
+    // Set PC to 0x250
+    chip8.executeOpcode(0x1250);
+
+    std::cout
+        << "PC before CALL = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // Set PC to the return address
+    chip8.executeOpcode(0x1252);
+
+    // 2387 CALL subroutine at 0x387
+    chip8.executeOpcode(0x2387);
+
+    std::cout
+        << "PC after CALL = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // 00EE RET
+    chip8.executeOpcode(0x00EE);
+
+    std::cout
+        << "PC after RET = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // ********************************** Conditional skip tests **********************************
+    std::cout << std::endl;
+    std::cout << "Conditional Skip Test" << std::endl;
+    // Set V0 = 0x0A
+    chip8.executeOpcode(0x600A);
+    // Set PC = 0x300
+    chip8.executeOpcode(0x1300);
+    // 300A SE V0, 0x0A
+    // V0 equals 0x0A, so PC should skip ahead by 2
+    chip8.executeOpcode(0x300A);
+
+    std::cout
+        << "After 300A (equal), PC = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // Set PC back to 0x300
+    chip8.executeOpcode(0x1300);
+
+    // 3005 SE V0, 0x05
+    // V0 does not equal 0x05, so PC should not change!!
+    chip8.executeOpcode(0x3005);
+
+    std::cout
+        << "After 3005 (not equal), PC = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // 4005 SNE V0, 0x05
+    // V0 does not equal 0x05, so PC should skip ahead by 2
+    chip8.executeOpcode(0x4005);
+
+    std::cout
+        << "After 4005 (not equal), PC = 0x"
+        << chip8.getPC()
+        << std::endl;
+    
+    // Set V1 = 0x0A and V2 = 0x0A
+    chip8.executeOpcode(0x610A);
+    chip8.executeOpcode(0x620A);
+
+    // Set PC = 0x300
+    chip8.executeOpcode(0x1300);
+
+    // 5120 SE V1, V2
+    // V1 equals V2, so PC should skip ahead by 2
+    chip8.executeOpcode(0x5120);
+
+    std::cout
+        << "After 5120 (equal), PC = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // Change V2 = 0x05
+    chip8.executeOpcode(0x6205);
+
+    // Set PC back to 0x300
+    chip8.executeOpcode(0x1300);
+
+    // 9120 SNE V1, V2
+    // V1 does not equal V2, so PC should skip ahead by 2
+    chip8.executeOpcode(0x9120);
+
+    std::cout
+        << "After 9120 (not equal), PC = 0x"
+        << chip8.getPC()
+        << std::endl;
+
+    // ********************************** Test ends **********************************
+
     // CPU cycle test with the loaded ROM
     Chip8 cycleTest;
 
